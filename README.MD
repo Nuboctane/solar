@@ -7,6 +7,6 @@ WASD
 Q = down
 E = up
 
-+ SHIFT = slow speed
+SHIFT = slow speed
 
 M1 = pan camera
