@@ -204,17 +204,12 @@ async function loadSpheres() {
     const data = await response.json();
 
     spheresData = data;
+    const sphereMap = new Map();
 
     const loader = new THREE.TextureLoader();
     const dropdown = document.getElementById('planetDropdown');
 
-    data.forEach((sphere) => {
-        const option = document.createElement('option');
-        option.value = sphere.name;
-        option.textContent = sphere.name;
-        dropdown.appendChild(option);
-    });
-
+    // First pass: Create all meshes
     for (const sphere of data) {
         const geometry = new THREE.SphereGeometry(sphere.size, 64, 64);
 
@@ -235,24 +230,52 @@ async function loadSpheres() {
 
         const material = new THREE.MeshStandardMaterial(materialOptions);
         const mesh = new THREE.Mesh(geometry, material);
+        mesh.name = sphere.name;
+        mesh.castShadow = true;
+        mesh.receiveShadow = true;
+        sphereMap.set(sphere.name, mesh);
+    }
 
+    // Second pass: Position all meshes
+    for (const sphere of data) {
+        const mesh = sphereMap.get(sphere.name);
         const index = data.indexOf(sphere);
-        const angle = (index / data.length) * Math.PI * 2 + Math.random() * 0.5;
-
-        const distance = new THREE.Vector3(...sphere.position).length();
-
-        const x = Math.cos(angle) * distance;
-        const z = Math.sin(angle) * distance;
-        const y = 0;
+        
+        let x, y, z;
+        
+        if (sphere.relative_to && sphere.relative_to.trim() !== '') {
+            // This is a moon/satellite - calculate offset from parent
+            const parentMesh = sphereMap.get(sphere.relative_to);
+            if (parentMesh) {
+                const parentPos = parentMesh.position;
+                
+                // Calculate relative distance from parent
+                const absoluteDistance = new THREE.Vector3(...sphere.position).length();
+                const parentDistance = parentPos.length();
+                const relativeDistance = absoluteDistance - parentDistance;
+                
+                // Apply angle around parent
+                const angle = (index / data.length) * Math.PI * 2;
+                x = parentPos.x + Math.cos(angle) * relativeDistance;
+                z = parentPos.z + Math.sin(angle) * relativeDistance;
+                y = parentPos.y; // Same plane as parent for now
+            } else {
+                // Parent not found, fall back to absolute position
+                [x, y, z] = sphere.position;
+            }
+        } else {
+            // This is a planet/star - position relative to [0,0,0]
+            const angle = (index / data.length) * Math.PI * 2 + Math.random() * 0.5;
+            const distance = new THREE.Vector3(...sphere.position).length();
+            x = Math.cos(angle) * distance;
+            z = Math.sin(angle) * distance;
+            y = 0;
+        }
 
         mesh.position.set(x, y, z);
         sphere.position = [x, y, z];
 
-        mesh.name = sphere.name;
-        mesh.castShadow = true;
-        mesh.receiveShadow = true;
-
-        // 🌟 Add ring if ring_texture is provided
+        // Add ring if ring_texture is provided
         if (sphere.ring_texture && sphere.ring_texture.trim() !== '') {
             const ringInnerRadius = sphere.size * 1.2;
             const ringOuterRadius = sphere.size * 2;
@@ -266,21 +289,17 @@ async function loadSpheres() {
             });
 
             const ring = new THREE.Mesh(ringGeometry, ringMaterial);
-            ring.rotation.x = Math.PI / 2; // flat horizontal
+            ring.rotation.x = Math.PI / 2;
             ring.position.copy(mesh.position);
-
             scene.add(ring);
-
-            mesh.userData.ring = ring; // optional: store for future reference
+            mesh.userData.ring = ring;
         }
 
-        // 🌞 Add light for the sun
         if (sphere.name === 'Sun') {
             const light = new THREE.PointLight(0xffffaa, 2, 100000);
-            light.position.set(...sphere.position);
+            light.position.set(x, y, z);
             light.castShadow = true;
             scene.add(light);
-
             light.shadow.mapSize.width = 5120;
             light.shadow.mapSize.height = 5120;
             light.shadow.camera.near = 0.1;
@@ -298,12 +317,26 @@ async function loadSpheres() {
         label.style.pointerEvents = 'none';
         label.style.transform = 'translate(-55%, 0)';
         document.body.appendChild(label);
-
         mesh.userData.label = label;
         mesh.userData.size = sphere.size;
     }
-}
 
+    // Populate sorted dropdown
+    const sortedData = [...data].sort((a, b) => {
+        if (a.name === 'Sun') return -1;
+        if (b.name === 'Sun') return 1;
+        const distA = Math.sqrt(a.position[0]**2 + a.position[1]**2 + a.position[2]**2);
+        const distB = Math.sqrt(b.position[0]**2 + b.position[1]**2 + b.position[2]**2);
+        return distA - distB;
+    });
+
+    sortedData.forEach((sphere) => {
+        const option = document.createElement('option');
+        option.value = sphere.name;
+        option.textContent = sphere.name;
+        dropdown.appendChild(option);
+    });
+}
 
 function focusOnPlanet(planet) {
     const planetPosition = new THREE.Vector3(...planet.position);

@@ -6,7 +6,8 @@
         "size": 1392,
         "position": [0, 0, 0],
         "info": "The Sun is the star at the center of our Solar System.",
-        "ring_texture": ""
+        "ring_texture": "",
+        "relative_to": ""
     },
     {
         "name": "Mercury",
@@ -15,7 +16,8 @@
         "size": 48.79,
         "position": [57910, 0, 0],
         "info": "Mercury is the smallest and closest planet to the Sun.",
-        "ring_texture": ""
+        "ring_texture": "",
+        "relative_to": "Sun"
     },
     {
         "name": "Venus",
@@ -24,7 +26,8 @@
         "size": 121.04,
         "position": [108200, 0, 0],
         "info": "Venus has a thick atmosphere and is the hottest planet.",
-        "ring_texture": ""
+        "ring_texture": "",
+        "relative_to": "Sun"
     },
     {
         "name": "Earth",
@@ -33,7 +36,8 @@
         "size": 127.42,
         "position": [149600, 0, 0],
         "info": "Earth is the only known planet to support life.",
-        "ring_texture": ""
+        "ring_texture": "",
+        "relative_to": "Sun"
     },
     {
         "name": "Moon",
@@ -42,7 +46,8 @@
         "size": 3.47,
         "position": [149984.4, 0, 0],
         "info": "Earth’s only natural satellite, the Moon orbits at an average distance of ~384,400 km.",
-        "ring_texture": ""
+        "ring_texture": "",
+        "relative_to": "Earth"
     },
     {
         "name": "Mars",
@@ -51,7 +56,8 @@
         "size": 67.79,
         "position": [227940, 0, 0],
         "info": "Mars is known as the Red Planet due to its surface color.",
-        "ring_texture": ""
+        "ring_texture": "",
+        "relative_to": "Sun"
     },
     {
         "name": "Ceres",
@@ -60,7 +66,8 @@
         "size": 9.4,
         "position": [414000, 0, 0],
         "info": "Ceres is the largest object in the asteroid belt between Mars and Jupiter and is classified as a dwarf planet.",
-        "ring_texture": ""
+        "ring_texture": "",
+        "relative_to": "Sun"
     },
     {
         "name": "Jupiter",
@@ -69,7 +76,8 @@
         "size": 1398.2,
         "position": [778330, 0, 0],
         "info": "Jupiter is the largest planet in our Solar System.",
-        "ring_texture": "constellation/textures/jupiter_ring.png"
+        "ring_texture": "constellation/textures/jupiter_ring.png",
+        "relative_to": "Sun"
     },
     {
         "name": "Saturn",
@@ -78,7 +86,8 @@
         "size": 1164.6,
         "position": [1429400, 0, 0],
         "info": "Saturn is famous for its extensive ring system.",
-        "ring_texture": "constellation/textures/saturn_ring.png"
+        "ring_texture": "constellation/textures/saturn_ring.png",
+        "relative_to": "Sun"
     },
     {
         "name": "Uranus",
@@ -87,7 +96,8 @@
         "size": 507.24,
         "position": [2870990, 0, 0],
         "info": "Uranus rotates on its side and has a faint ring system.",
-        "ring_texture": "constellation/textures/uranus_ring.png"
+        "ring_texture": "constellation/textures/uranus_ring.png",
+        "relative_to": "Sun"
     },
     {
         "name": "Neptune",
@@ -96,7 +106,8 @@
         "size": 492.44,
         "position": [4504300, 0, 0],
         "info": "Neptune is the farthest known planet in our Solar System.",
-        "ring_texture": "constellation/textures/neptune_ring.png"
+        "ring_texture": "constellation/textures/neptune_ring.png",
+        "relative_to": "Sun"
     },
     {
         "name": "Eris",
@@ -105,7 +116,8 @@
         "size": 23.26,
         "position": [10125000, 0, 0],
         "info": "Eris is a dwarf planet in the outer Solar System and is slightly smaller than Pluto.",
-        "ring_texture": ""
+        "ring_texture": "",
+        "relative_to": "Sun"
     },
     {
         "name": "Haumea",
@@ -114,7 +126,8 @@
         "size": 16.32,
         "position": [6450000, 0, 0],
         "info": "Haumea is a fast-rotating dwarf planet, known for its elongated shape.",
-        "ring_texture": ""
+        "ring_texture": "",
+        "relative_to": "Sun"
     },
     {
         "name": "Makemake",
@@ -123,6 +136,17 @@
         "size": 14.32,
         "position": [6780000, 0, 0],
         "info": "Makemake is a dwarf planet in the Kuiper Belt and one of the largest known objects in that region.",
-        "ring_texture": ""
+        "ring_texture": "",
+        "relative_to": "Sun"
+    },
+    {
+        "name": "Proxima Centauri",
+        "texture": "constellation/textures/proxima_centauri.jpg",
+        "color": "#ff3300",
+        "size": 200,
+        "position": [40200000, 0, 0],
+        "info": "Proxima Centauri is a red dwarf star and the closest known star to the Sun at about 4.24 light-years away.",
+        "ring_texture": "",
+        "relative_to": ""
     }
 ]
