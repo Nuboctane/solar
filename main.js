@@ -241,29 +241,27 @@ async function loadSpheres() {
 function focusOnPlanet(planet) {
     const planetPosition = new THREE.Vector3(...planet.position);
     const distance = planet.size * 5;
-    
-    const currentUp = new THREE.Vector3(0, 1, 0).applyQuaternion(camera.quaternion);
-    
-    const currentDirection = new THREE.Vector3();
-    camera.getWorldDirection(currentDirection);
-    const targetPosition = planetPosition.clone()
-        .add(currentDirection.multiplyScalar(-distance));
-    
+
+    // Get the current direction the camera is facing
+    const forward = new THREE.Vector3();
+    camera.getWorldDirection(forward);
+
+    // Calculate new cameraHolder position by backing up from the planet along that direction
+    const targetPosition = planetPosition.clone().sub(forward.multiplyScalar(distance));
     cameraHolder.position.copy(targetPosition);
-    cameraHolder.rotation.set(0, 0, 0);
-    camera.rotation.set(0, 0, 0);
-    
-    camera.lookAt(planetPosition);
-    camera.up.copy(currentUp);
-    
+
+    // Don't reset rotation — keep current orientation
+    // Sync yaw and pitch from the camera's current quaternion
     const euler = new THREE.Euler().setFromQuaternion(camera.quaternion, 'YXZ');
     yaw = euler.y;
     pitch = euler.x;
-    
+
+    // Adjust near/far planes based on planet size
     camera.near = Math.max(0.1, planet.size * 0.01);
     camera.far = 9000000 * 1.1;
     camera.updateProjectionMatrix();
 }
+
 
 function onPlanetSelect(event) {
     const planetName = event.target.value;
