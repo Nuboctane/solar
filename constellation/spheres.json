@@ -1,0 +1,114 @@
+[
+    {
+        "name": "Sun",
+        "texture": "constellation/textures/sun.jpg",
+        "color": "#ffff00",
+        "size": 1392,
+        "position": [0, 0, 0],
+        "info": "The Sun is the star at the center of our Solar System."
+    },
+    {
+        "name": "Mercury",
+        "texture": "constellation/textures/mercury.jpg",
+        "color": "#b1b1b1",
+        "size": 48.79,
+        "position": [57910, 0, 0],
+        "info": "Mercury is the smallest and closest planet to the Sun."
+    },
+    {
+        "name": "Venus",
+        "texture": "constellation/textures/venus.jpg",
+        "color": "#f5deb3",
+        "size": 121.04,
+        "position": [108200, 0, 0],
+        "info": "Venus has a thick atmosphere and is the hottest planet."
+    },
+    {
+        "name": "Earth",
+        "texture": "constellation/textures/earth.jpg",
+        "color": "#0077ff",
+        "size": 127.42,
+        "position": [149600, 0, 0],
+        "info": "Earth is the only known planet to support life."
+    },
+    {
+        "name": "Moon",
+        "texture": "constellation/textures/moon.jpg",
+        "color": "#cccccc",
+        "size": 3.47,
+        "position": [149984.4, 0, 0],
+        "info": "Earth’s only natural satellite, the Moon orbits at an average distance of ~384,400 km."
+    },
+    {
+        "name": "Mars",
+        "texture": "constellation/textures/mars.jpg",
+        "color": "#ff4500",
+        "size": 67.79,
+        "position": [227940, 0, 0],
+        "info": "Mars is known as the Red Planet due to its surface color."
+    },
+    {
+        "name": "Ceres",
+        "texture": "constellation/textures/ceres.jpg",
+        "color": "#ffff00",
+        "size": 9.4,
+        "position": [414000, 0, 0],
+        "info": "Ceres is the largest object in the asteroid belt between Mars and Jupiter and is classified as a dwarf planet."
+    },
+    {
+        "name": "Jupiter",
+        "texture": "constellation/textures/jupiter.jpg",
+        "color": "#ffcc99",
+        "size": 1398.2,
+        "position": [778330, 0, 0],
+        "info": "Jupiter is the largest planet in our Solar System."
+    },
+    {
+        "name": "Saturn",
+        "texture": "constellation/textures/saturn.jpg",
+        "color": "#f0e68c",
+        "size": 1164.6,
+        "position": [1429400, 0, 0],
+        "info": "Saturn is famous for its extensive ring system."
+    },
+    {
+        "name": "Uranus",
+        "texture": "constellation/textures/uranus.jpg",
+        "color": "#afeeee",
+        "size": 507.24,
+        "position": [2870990, 0, 0],
+        "info": "Uranus rotates on its side and has a faint ring system."
+    },
+    {
+        "name": "Neptune",
+        "texture": "constellation/textures/neptune.jpg",
+        "color": "#407123",
+        "size": 492.44,
+        "position": [4504300, 0, 0],
+        "info": "Neptune is the farthest known planet in our Solar System."
+    },
+    {
+        "name": "Eris",
+        "texture": "constellation/textures/eris.jpg",
+        "color": "#888888",
+        "size": 23.26,
+        "position": [10125000, 0, 0],
+        "info": "Eris is a dwarf planet in the outer Solar System and is slightly smaller than Pluto."
+    },
+    {
+        "name": "Haumea",
+        "texture": "constellation/textures/haumea.jpg",
+        "color": "#b0b0b0",
+        "size": 16.32,
+        "position": [6450000, 0, 0],
+        "info": "Haumea is a fast-rotating dwarf planet, known for its elongated shape."
+    },
+    {
+        "name": "Makemake",
+        "texture": "constellation/textures/makemake.jpg",
+        "color": "#a0522d",
+        "size": 14.32,
+        "position": [6780000, 0, 0],
+        "info": "Makemake is a dwarf planet in the Kuiper Belt and one of the largest known objects in that region."
+    }
+]
