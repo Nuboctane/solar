@@ -14,6 +14,22 @@ init();
 loadSpheres();
 animate();
 
+const dropdown = document.getElementById('planetDropdown');
+let lastSelectedValue = '';
+
+dropdown.addEventListener('change', (event) => {
+    if (event.target.value !== '' || event.target.value === lastSelectedValue) {
+        onPlanetSelect(event);
+    }
+    lastSelectedValue = event.target.value;
+});
+
+dropdown.addEventListener('click', (event) => {
+    if (dropdown.value === lastSelectedValue) {
+        onPlanetSelect(event);
+    }
+});
+
 function init() {
     window.addEventListener('contextmenu', (e) => e.preventDefault());
     scene = new THREE.Scene();
@@ -70,13 +86,18 @@ function init() {
         const forward = new THREE.Vector3();
         camera.getWorldDirection(forward);
     
-        if (e.deltaY < 0) {
-            cameraHolder.position.add(forward.multiplyScalar(scrollSpeed));
-        }
+        // Reset any current animation
+        isZooming = false;
     
-        if (e.deltaY > 0) {
-            cameraHolder.position.add(forward.multiplyScalar(-scrollSpeed));
-        }
+        const direction = e.deltaY < 0 ? 1 : -1;
+        const offset = forward.multiplyScalar(scrollSpeed * direction);
+        zoomFrom.copy(cameraHolder.position);
+        zoomTo.copy(zoomFrom.clone().add(offset));
+    
+        isZooming = true;
+        zoomStart = null;
+    
+        requestAnimationFrame(zoomStep);
     });
 
     window.addEventListener('mousedown', (e) => {
@@ -106,8 +127,30 @@ function init() {
 
 }
 
+let isZooming = false;
+let zoomStart = null;
+let zoomFrom = new THREE.Vector3();
+let zoomTo = new THREE.Vector3();
+let zoomDuration = 0.1;
+
+function zoomStep(timestamp) {
+    if (!zoomStart) zoomStart = timestamp;
+    const elapsed = (timestamp - zoomStart) / 1000;
+    const t = Math.min(elapsed / zoomDuration, 1);
+    const easedT = t * t * (3 - 2 * t); // smoothstep
+
+    const currentPos = zoomFrom.clone().lerp(zoomTo, easedT);
+    cameraHolder.position.copy(currentPos);
+
+    if (t < 1 && isZooming) {
+        requestAnimationFrame(zoomStep);
+    } else {
+        isZooming = false;
+    }
+}
+
 function moveCamera() {
-    let speed = keysPressed.has('ShiftLeft') || keysPressed.has('ShiftRight') ? 1 : 50;
+    let speed = keysPressed.has('ShiftLeft') || keysPressed.has('ShiftRight') ? 0.1 : 1;
     const direction = new THREE.Vector3();
     const forward = new THREE.Vector3();
     const right = new THREE.Vector3();
@@ -195,7 +238,7 @@ async function loadSpheres() {
 
         const index = data.indexOf(sphere);
         const angle = (index / data.length) * Math.PI * 2 + Math.random() * 0.5;
-        
+
         const distance = new THREE.Vector3(...sphere.position).length();
 
         const x = Math.cos(angle) * distance;
@@ -209,12 +252,35 @@ async function loadSpheres() {
         mesh.castShadow = true;
         mesh.receiveShadow = true;
 
+        // 🌟 Add ring if ring_texture is provided
+        if (sphere.ring_texture && sphere.ring_texture.trim() !== '') {
+            const ringInnerRadius = sphere.size * 1.2;
+            const ringOuterRadius = sphere.size * 2;
+
+            const ringGeometry = new THREE.RingGeometry(ringInnerRadius, ringOuterRadius, 64);
+            const ringTexture = await loader.loadAsync(sphere.ring_texture);
+            const ringMaterial = new THREE.MeshBasicMaterial({
+                map: ringTexture,
+                side: THREE.DoubleSide,
+                transparent: true,
+            });
+
+            const ring = new THREE.Mesh(ringGeometry, ringMaterial);
+            ring.rotation.x = Math.PI / 2; // flat horizontal
+            ring.position.copy(mesh.position);
+
+            scene.add(ring);
+
+            mesh.userData.ring = ring; // optional: store for future reference
+        }
+
+        // 🌞 Add light for the sun
         if (sphere.name === 'Sun') {
             const light = new THREE.PointLight(0xffffaa, 2, 100000);
             light.position.set(...sphere.position);
             light.castShadow = true;
             scene.add(light);
-            
+
             light.shadow.mapSize.width = 5120;
             light.shadow.mapSize.height = 5120;
             light.shadow.camera.near = 0.1;
@@ -238,29 +304,46 @@ async function loadSpheres() {
     }
 }
 
+
 function focusOnPlanet(planet) {
     const planetPosition = new THREE.Vector3(...planet.position);
     const distance = planet.size * 5;
 
-    // Get the current direction the camera is facing
     const forward = new THREE.Vector3();
     camera.getWorldDirection(forward);
 
-    // Calculate new cameraHolder position by backing up from the planet along that direction
     const targetPosition = planetPosition.clone().sub(forward.multiplyScalar(distance));
-    cameraHolder.position.copy(targetPosition);
+    const startPosition = cameraHolder.position.clone();
 
-    // Don't reset rotation — keep current orientation
-    // Sync yaw and pitch from the camera's current quaternion
-    const euler = new THREE.Euler().setFromQuaternion(camera.quaternion, 'YXZ');
-    yaw = euler.y;
-    pitch = euler.x;
+    const duration = 0.5;
+    let startTime = null;
 
-    // Adjust near/far planes based on planet size
-    camera.near = Math.max(0.1, planet.size * 0.01);
-    camera.far = 9000000 * 1.1;
-    camera.updateProjectionMatrix();
+    function animate(time) {
+        if (!startTime) startTime = time;
+        const elapsed = (time - startTime) / 1000;
+        const t = Math.min(elapsed / duration, 1);
+
+        const easedT = t * t * (3 - 2 * t);
+
+        const currentPosition = startPosition.clone().lerp(targetPosition, easedT);
+        cameraHolder.position.copy(currentPosition);
+
+        if (t < 1) {
+            requestAnimationFrame(animate);
+        } else {
+            const euler = new THREE.Euler().setFromQuaternion(camera.quaternion, 'YXZ');
+            yaw = euler.y;
+            pitch = euler.x;
+
+            camera.near = Math.max(0.1, planet.size * 0.01);
+            camera.far = 9000000 * 1.1;
+            camera.updateProjectionMatrix();
+        }
+    }
+
+    requestAnimationFrame(animate);
 }
+
 
 
 function onPlanetSelect(event) {
