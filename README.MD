@@ -1,7 +1,7 @@
 run
 > py -m http.server 
 
-###move camera
+### move camera
 WASD
 
 Q = down
