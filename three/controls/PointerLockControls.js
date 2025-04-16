@@ -22,11 +22,8 @@ class PointerLockControls extends EventDispatcher {
 		this.domElement = domElement;
 
 		this.isLocked = false;
-
-		// Set to constrain the pitch of the camera
-		// Range is 0 to Math.PI radians
-		this.minPolarAngle = 0; // radians
-		this.maxPolarAngle = Math.PI; // radians
+		this.minPolarAngle = 0;
+		this.maxPolarAngle = Math.PI;
 
 		this.pointerSpeed = 1.0;
 

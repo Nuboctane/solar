@@ -59,25 +59,23 @@ function init() {
         yaw -= e.movementX * 0.002;
         pitch -= e.movementY * 0.002;
     
-        // Constrain the pitch to prevent flipping over
         pitch = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, pitch));
     
         cameraHolder.rotation.y = yaw;
         camera.rotation.x = pitch;
     });
     
-    // Fix camera zoom issues on scroll
     window.addEventListener('wheel', (e) => {
         const scrollSpeed = 1000;
         const forward = new THREE.Vector3();
         camera.getWorldDirection(forward);
     
         if (e.deltaY < 0) {
-            cameraHolder.position.add(forward.multiplyScalar(scrollSpeed)); // Zoom in
+            cameraHolder.position.add(forward.multiplyScalar(scrollSpeed));
         }
     
         if (e.deltaY > 0) {
-            cameraHolder.position.add(forward.multiplyScalar(-scrollSpeed)); // Zoom out
+            cameraHolder.position.add(forward.multiplyScalar(-scrollSpeed));
         }
     });
 
@@ -94,7 +92,6 @@ function init() {
         pitch -= e.movementY * 0.002;
         pitch = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, pitch));
         
-        // Apply rotations using quaternion to avoid gimbal lock
         const quaternion = new THREE.Quaternion()
             .setFromEuler(new THREE.Euler(pitch, yaw, 0, 'YXZ'));
         
@@ -157,18 +154,17 @@ function updateLabels() {
     });
 }
 
-let spheresData = [];  // Declare the variable before using it
+let spheresData = [];
 
 async function loadSpheres() {
     const response = await fetch('constellation/spheres.json');
     const data = await response.json();
 
-    spheresData = data;  // Store the planets data globally
+    spheresData = data;
 
     const loader = new THREE.TextureLoader();
     const dropdown = document.getElementById('planetDropdown');
 
-    // Add options to the dropdown for each planet
     data.forEach((sphere) => {
         const option = document.createElement('option');
         option.value = sphere.name;
@@ -246,36 +242,29 @@ function focusOnPlanet(planet) {
     const planetPosition = new THREE.Vector3(...planet.position);
     const distance = planet.size * 5;
     
-    // Store current camera UP vector
     const currentUp = new THREE.Vector3(0, 1, 0).applyQuaternion(camera.quaternion);
     
-    // Calculate target position (maintain current view direction)
     const currentDirection = new THREE.Vector3();
     camera.getWorldDirection(currentDirection);
     const targetPosition = planetPosition.clone()
         .add(currentDirection.multiplyScalar(-distance));
     
-    // Reset camera system
     cameraHolder.position.copy(targetPosition);
     cameraHolder.rotation.set(0, 0, 0);
     camera.rotation.set(0, 0, 0);
     
-    // Look at planet with preserved up direction
     camera.lookAt(planetPosition);
-    camera.up.copy(currentUp); // Restore original up vector
+    camera.up.copy(currentUp);
     
-    // Update control variables
     const euler = new THREE.Euler().setFromQuaternion(camera.quaternion, 'YXZ');
     yaw = euler.y;
     pitch = euler.x;
     
-    // Adjust clipping planes
     camera.near = Math.max(0.1, planet.size * 0.01);
     camera.far = 9000000 * 1.1;
     camera.updateProjectionMatrix();
 }
 
-// Event listener function triggered when the planet is selected
 function onPlanetSelect(event) {
     const planetName = event.target.value;
     if (planetName) {
