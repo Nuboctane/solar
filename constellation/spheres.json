@@ -89,6 +89,17 @@
         "relative_to": "Mars"
     },
     {
+        "name": "Sedna",
+        "texture": "constellation/textures/sedna.jpg",
+        "color": "#a0522d",
+        "size": 9.96,
+        "diameter": 0.996,
+        "position": [9370000, 0, 0],
+        "info": "Sedna is a distant dwarf planet with one of the largest orbits in our solar system, taking approximately 11,400 years to complete one orbit around the Sun. Its surface is one of the reddest in the solar system, likely due to hydrocarbon deposits.",
+        "ring_texture": "",
+        "relative_to": "Sun"
+    },
+    {
         "name": "Ceres",
         "texture": "constellation/textures/ceres.jpg",
         "color": "#ffff00",
