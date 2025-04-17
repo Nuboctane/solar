@@ -233,6 +233,7 @@ async function loadSpheres() {
         mesh.name = sphere.name;
         mesh.castShadow = true;
         mesh.receiveShadow = true;
+        mesh.diameter = sphere.diameter;
         sphereMap.set(sphere.name, mesh);
     }
 
@@ -244,29 +245,25 @@ async function loadSpheres() {
         let x, y, z;
         
         if (sphere.relative_to && sphere.relative_to.trim() !== '') {
-            // This is a moon/satellite - calculate offset from parent
             const parentMesh = sphereMap.get(sphere.relative_to);
             if (parentMesh) {
                 const parentPos = parentMesh.position;
                 
-                // Calculate relative distance from parent
-                const absoluteDistance = new THREE.Vector3(...sphere.position).length();
-                const parentDistance = parentPos.length();
-                const relativeDistance = absoluteDistance - parentDistance;
+                // The position already includes parent radius, use it directly
+                const orbitalDistance = sphere.position[0] + (parentMesh.diameter*20); 
                 
                 // Apply angle around parent
                 const angle = (index / data.length) * Math.PI * 2;
-                x = parentPos.x + Math.cos(angle) * relativeDistance;
-                z = parentPos.z + Math.sin(angle) * relativeDistance;
-                y = parentPos.y; // Same plane as parent for now
+                x = parentPos.x + Math.cos(angle) * orbitalDistance;
+                z = parentPos.z + Math.sin(angle) * orbitalDistance;
+                y = parentPos.y;
+                
             } else {
-                // Parent not found, fall back to absolute position
                 [x, y, z] = sphere.position;
             }
         } else {
-            // This is a planet/star - position relative to [0,0,0]
             const angle = (index / data.length) * Math.PI * 2 + Math.random() * 0.5;
-            const distance = new THREE.Vector3(...sphere.position).length();
+            const distance = sphere.position[0]; // Use X coordinate directly
             x = Math.cos(angle) * distance;
             z = Math.sin(angle) * distance;
             y = 0;
