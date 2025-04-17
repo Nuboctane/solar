@@ -15,6 +15,44 @@ init();
 loadSpheres();
 animate();
 
+function toggleLabels() {
+    // Get all label containers
+    const labels = document.querySelectorAll('.planet-label-container');
+    let shouldShow;
+    
+    // Check current state of first label (if any exist)
+    if (labels.length > 0) {
+        const firstLabel = labels[0];
+        // If currently hidden (display none or opacity 0), we should show
+        shouldShow = window.getComputedStyle(firstLabel).display === 'none' || 
+                    firstLabel.style.opacity === '0';
+    } else {
+        // If no labels found, default to showing them
+        shouldShow = true;
+    }
+    
+    // Toggle all labels
+    labels.forEach(label => {
+        if (shouldShow) {
+            // Show labels with smooth transition
+            label.style.display = 'block';
+            label.style.opacity = '1';
+        } else {
+            // Hide labels with smooth transition
+            label.style.opacity = '0';
+            // After fade out completes, set display none
+            setTimeout(() => {
+                label.style.display = 'none';
+            }, 300); // Match this with your CSS transition time
+        }
+    });
+    
+    // Return current state
+    return shouldShow;
+}
+
+window.toggleLabels = toggleLabels;
+
 const dropdown = document.getElementById('planetDropdown');
 let lastSelectedValue = '';
 
@@ -102,11 +140,19 @@ function init() {
     });
 
     window.addEventListener('mousedown', (e) => {
-        if (e.button !== 2) isLeftMouseDown = true;
+        if (e.button !== 2) {
+            isLeftMouseDown = true;
+            document.body.style.cursor = 'grabbing';
+        }
     });
+    
     window.addEventListener('mouseup', (e) => {
-        if (e.button !== 2) isLeftMouseDown = false;
+        if (e.button !== 2) {
+            isLeftMouseDown = false;
+            document.body.style.cursor = 'grab'; // Revert to default cursor
+        }
     });
+    
     window.addEventListener('mousemove', (e) => {
         if (!isLeftMouseDown) return;
         
@@ -511,14 +557,6 @@ function updateLabelConnections() {
         canvas.width = maxX - minX;
         canvas.height = maxY - minY;
         
-        // Draw line
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.beginPath();
-        ctx.moveTo(startX - minX, startY - minY);
-        ctx.lineTo(endX - minX, endY - minY);
-        ctx.strokeStyle = 'rgba(255,255,255,0.7)';
-        ctx.lineWidth = 1;
-        ctx.stroke();
     });
 }
 
