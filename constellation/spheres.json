@@ -68,6 +68,8 @@
     {
         "name": "Phobos",
         "color": "#aaaaaa",
+        "texture": "constellation/textures/phobos.jpg",
+        "model": "constellation/models/phobos.glb",
         "size": 1.1,
         "diameter": 0.022,
         "position": [9.378, 0, 0],
@@ -78,6 +80,7 @@
     {
         "name": "Deimos",
         "color": "#999999",
+        "model": "constellation/models/deimos.glb",
         "size": 0.6,
         "diameter": 0.012,
         "position": [23.46, 0, 0],
@@ -221,6 +224,7 @@
     {
         "name": "Iapetus",
         "color": "#999999",
+        "texture": "constellation/textures/iapetus.jpg", 
         "size": 14.7,
         "diameter": 1.47,
         "position": [3561.3, 0, 0],

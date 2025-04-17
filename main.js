@@ -1,4 +1,5 @@
 import * as THREE from './three/three.module.js';
+import { GLTFLoader } from './three/three.GLTFLoader.js';
 
 let scene, camera, renderer;
 const keysPressed = new Set();
@@ -150,7 +151,7 @@ function zoomStep(timestamp) {
 }
 
 function moveCamera() {
-    let speed = keysPressed.has('ShiftLeft') || keysPressed.has('ShiftRight') ? 0.1 : 1;
+    let speed = keysPressed.has('ShiftLeft') || keysPressed.has('ShiftRight') ? 0.001 : 0.5;
     const direction = new THREE.Vector3();
     const forward = new THREE.Vector3();
     const right = new THREE.Vector3();
@@ -173,28 +174,18 @@ function moveCamera() {
 function animate() {
     requestAnimationFrame(animate);
     moveCamera();
-    updateLabels();
-    renderer.render(scene, camera);
-}
 
-function updateLabels() {
-    const canvas = renderer.domElement;
-
-    scene.traverse((obj) => {
-        if (obj.isMesh && obj.userData.label) {
-            const vector = obj.position.clone();
-            vector.y -= obj.userData.size + 100;
-            vector.project(camera);
-
-            const x = (vector.x * 0.5 + 0.5) * canvas.clientWidth;
-            const y = (-vector.y * 0.5 + 0.5) * canvas.clientHeight;
-
-            obj.userData.label.style.left = `${x}px`;
-            obj.userData.label.style.top = `${y}px`;
-
-            obj.userData.label.style.display = vector.z > 1 || vector.z < -1 ? 'none' : 'block';
+    // Update all label positions
+    scene.traverse(obj => {
+        if (obj.userData?.updateLabel) {
+            obj.userData.updateLabel();
         }
     });
+
+    // Handle label collisions and draw lines
+    updateLabelConnections();
+    
+    renderer.render(scene, camera);
 }
 
 let spheresData = [];
@@ -205,31 +196,43 @@ async function loadSpheres() {
 
     spheresData = data;
     const sphereMap = new Map();
-
     const loader = new THREE.TextureLoader();
+    const gltfLoader = new GLTFLoader();
     const dropdown = document.getElementById('planetDropdown');
 
     // First pass: Create all meshes
     for (const sphere of data) {
-        const geometry = new THREE.SphereGeometry(sphere.size, 64, 64);
-
-        let materialOptions = {
-            roughness: 0.1,
-            metalness: 0.1
-        };
-
-        if (sphere.texture) {
-            const texture = await loader.loadAsync(sphere.texture);
-            texture.wrapS = THREE.RepeatWrapping;
-            texture.wrapT = THREE.RepeatWrapping;
-            materialOptions.map = texture;
+        let mesh;
+        
+        if (sphere.model) {
+            try {
+                const gltf = await gltfLoader.loadAsync(sphere.model);
+                mesh = gltf.scene;
+                
+                // Calculate proper scale based on bounding box
+                const bbox = new THREE.Box3().setFromObject(mesh);
+                const size = bbox.getSize(new THREE.Vector3());
+                const maxDim = Math.max(size.x, size.y, size.z);
+                const scale = sphere.size / maxDim;
+                mesh.scale.set(scale, scale, scale);
+                
+                mesh.traverse((child) => {
+                    if (child.isMesh) {
+                        child.castShadow = true;
+                        child.receiveShadow = true;
+                    }
+                });
+            } catch (error) {
+                console.error(`Failed to load model for ${sphere.name}:`, error);
+                mesh = createSphereMesh(sphere, loader);
+            }
         } else {
-            materialOptions.color = new THREE.Color(sphere.color);
-            materialOptions.emissive = new THREE.Color(sphere.color);
+            mesh = createSphereMesh(sphere, loader);
         }
 
-        const material = new THREE.MeshStandardMaterial(materialOptions);
-        const mesh = new THREE.Mesh(geometry, material);
+        // Store bounding box info for label positioning
+        const bbox = new THREE.Box3().setFromObject(mesh);
+        mesh.userData.bbox = bbox;
         mesh.name = sphere.name;
         mesh.castShadow = true;
         mesh.receiveShadow = true;
@@ -248,22 +251,17 @@ async function loadSpheres() {
             const parentMesh = sphereMap.get(sphere.relative_to);
             if (parentMesh) {
                 const parentPos = parentMesh.position;
-                
-                // The position already includes parent radius, use it directly
-                const orbitalDistance = sphere.position[0] + (parentMesh.diameter*20); 
-                
-                // Apply angle around parent
+                const orbitalDistance = sphere.position[0] + (parentMesh.diameter * 20);
                 const angle = (index / data.length) * Math.PI * 2;
                 x = parentPos.x + Math.cos(angle) * orbitalDistance;
                 z = parentPos.z + Math.sin(angle) * orbitalDistance;
                 y = parentPos.y;
-                
             } else {
                 [x, y, z] = sphere.position;
             }
         } else {
             const angle = (index / data.length) * Math.PI * 2 + Math.random() * 0.5;
-            const distance = sphere.position[0]; // Use X coordinate directly
+            const distance = sphere.position[0];
             x = Math.cos(angle) * distance;
             z = Math.sin(angle) * distance;
             y = 0;
@@ -272,11 +270,10 @@ async function loadSpheres() {
         mesh.position.set(x, y, z);
         sphere.position = [x, y, z];
 
-        // Add ring if ring_texture is provided
+        // Add ring if specified
         if (sphere.ring_texture && sphere.ring_texture.trim() !== '') {
             const ringInnerRadius = sphere.size * 1.2;
             const ringOuterRadius = sphere.size * 2;
-
             const ringGeometry = new THREE.RingGeometry(ringInnerRadius, ringOuterRadius, 64);
             const ringTexture = await loader.loadAsync(sphere.ring_texture);
             const ringMaterial = new THREE.MeshBasicMaterial({
@@ -292,6 +289,7 @@ async function loadSpheres() {
             mesh.userData.ring = ring;
         }
 
+        // Add sun light
         if (sphere.name === 'Sun') {
             const light = new THREE.PointLight(0xffffaa, 2, 100000);
             light.position.set(x, y, z);
@@ -305,20 +303,13 @@ async function loadSpheres() {
 
         scene.add(mesh);
 
-        const label = document.createElement('div');
-        label.className = 'planet-label';
-        label.innerText = sphere.name;
-        label.style.position = 'absolute';
-        label.style.color = '#fff';
-        label.style.fontFamily = 'sans-serif';
-        label.style.pointerEvents = 'none';
-        label.style.transform = 'translate(-55%, 0)';
-        document.body.appendChild(label);
+        // Create label
+        const label = createLabel(mesh, sphere.name);
         mesh.userData.label = label;
         mesh.userData.size = sphere.size;
     }
 
-    // Populate sorted dropdown
+    // Populate dropdown
     const sortedData = [...data].sort((a, b) => {
         if (a.name === 'Sun') return -1;
         if (b.name === 'Sun') return 1;
@@ -333,7 +324,96 @@ async function loadSpheres() {
         option.textContent = sphere.name;
         dropdown.appendChild(option);
     });
+
+    function createSphereMesh(sphere, textureLoader) {
+        const geometry = new THREE.SphereGeometry(sphere.size, 64, 64);
+        let materialOptions = {
+            roughness: 0.1,
+            metalness: 0.1
+        };
+
+        if (sphere.texture) {
+            const texture = textureLoader.load(sphere.texture);
+            texture.wrapS = THREE.RepeatWrapping;
+            texture.wrapT = THREE.RepeatWrapping;
+            materialOptions.map = texture;
+        } else {
+            materialOptions.color = new THREE.Color(sphere.color);
+            materialOptions.emissive = new THREE.Color(sphere.color);
+        }
+
+        const mesh = new THREE.Mesh(geometry, new THREE.MeshStandardMaterial(materialOptions));
+        mesh.userData.bbox = new THREE.Box3().setFromObject(mesh);
+        return mesh;
+    }
+
+    function createLabel(mesh, text) {
+        const labelContainer = document.createElement('div');
+        labelContainer.className = 'planet-label-container';
+        labelContainer.style.position = 'absolute';
+        labelContainer.style.pointerEvents = 'none';
+        labelContainer.style.transform = 'translate(-50%, 0)';
+
+        const label = document.createElement('div');
+        label.className = 'planet-label';
+        label.textContent = text;
+        label.style.color = '#fff';
+        label.style.fontFamily = 'sans-serif';
+        label.style.whiteSpace = 'nowrap';
+        label.style.textAlign = 'center';
+        label.style.textShadow = '0 0 5px #000';
+        label.style.padding = '2px 8px';
+        label.style.backgroundColor = 'rgba(0,0,0,0.5)';
+        label.style.borderRadius = '4px';
+
+        const lineCanvas = document.createElement('canvas');
+        lineCanvas.className = 'planet-line-canvas';
+        lineCanvas.width = 1;
+        lineCanvas.height = 1;
+        lineCanvas.style.position = 'absolute';
+        lineCanvas.style.left = '0';
+        lineCanvas.style.top = '0';
+        lineCanvas.style.pointerEvents = 'none';
+
+        labelContainer.appendChild(lineCanvas);
+        labelContainer.appendChild(label);
+        document.body.appendChild(labelContainer);
+
+        // Store references for updates
+        if (!window.planetLabels) window.planetLabels = [];
+        const labelObj = { container: labelContainer, canvas: lineCanvas, mesh };
+        window.planetLabels.push(labelObj);
+
+        mesh.userData.updateLabel = () => {
+            if (!mesh.userData.bbox) return;
+
+            // Get object center in world space
+            const center = new THREE.Vector3();
+            mesh.userData.bbox.getCenter(center);
+            center.applyMatrix4(mesh.matrixWorld);
+
+            // Convert to screen position
+            const screenPos = center.clone().project(camera);
+            const screenX = (screenPos.x * 0.5 + 0.5) * window.innerWidth;
+            const screenY = (-screenPos.y * 0.5 + 0.5) * window.innerHeight;
+
+            // Store for line drawing
+            labelObj.screenPos = { x: screenX, y: screenY };
+
+            if (screenPos.z <= 1) {
+                // Position label container (will be adjusted for collisions)
+                labelContainer.style.left = `${screenX}px`;
+                labelContainer.style.top = `${screenY + 20}px`; // Start 20px below
+                labelContainer.style.display = 'block';
+            } else {
+                labelContainer.style.display = 'none';
+            }
+        };
+
+        return labelContainer;
+    }
 }
+
 
 function focusOnPlanet(planet) {
     const planetPosition = new THREE.Vector3(...planet.position);
@@ -374,6 +454,73 @@ function focusOnPlanet(planet) {
     requestAnimationFrame(animate);
 }
 
+function updateLabelConnections() {
+    if (!window.planetLabels) return;
+
+    // Sort labels by vertical position
+    const visibleLabels = window.planetLabels
+        .filter(item => item.container.style.display !== 'none')
+        .sort((a, b) => a.screenPos.y - b.screenPos.y);
+
+    // First pass: position labels with collision detection
+    for (let i = 0; i < visibleLabels.length; i++) {
+        const current = visibleLabels[i];
+        const labelRect = current.container.getBoundingClientRect();
+        const labelHeight = labelRect.height;
+        
+        // Find optimal position (start 20px below object)
+        let bestY = current.screenPos.y + 20;
+        
+        // Check against other labels
+        for (let j = 0; j < i; j++) {
+            const other = visibleLabels[j];
+            const otherRect = other.container.getBoundingClientRect();
+            
+            if (Math.abs(otherRect.left - labelRect.left) < otherRect.width &&
+                bestY < otherRect.bottom + 5) {
+                bestY = otherRect.bottom + 5;
+            }
+        }
+        
+        current.container.style.top = `${bestY}px`;
+        current.finalPos = { 
+            x: parseFloat(current.container.style.left),
+            y: bestY 
+        };
+    }
+
+    // Second pass: draw connecting lines
+    visibleLabels.forEach(labelObj => {
+        const canvas = labelObj.canvas;
+        const ctx = canvas.getContext('2d');
+        
+        // Calculate line start (object position) and end (label position)
+        const startX = labelObj.screenPos.x;
+        const startY = labelObj.screenPos.y;
+        const endX = labelObj.finalPos.x;
+        const endY = labelObj.finalPos.y - 10; // 10px above label
+        
+        // Set canvas size to cover the line
+        const minX = Math.min(startX, endX);
+        const maxX = Math.max(startX, endX);
+        const minY = Math.min(startY, endY);
+        const maxY = Math.max(startY, endY);
+        
+        canvas.style.left = `${minX}px`;
+        canvas.style.top = `${minY}px`;
+        canvas.width = maxX - minX;
+        canvas.height = maxY - minY;
+        
+        // Draw line
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.beginPath();
+        ctx.moveTo(startX - minX, startY - minY);
+        ctx.lineTo(endX - minX, endY - minY);
+        ctx.strokeStyle = 'rgba(255,255,255,0.7)';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+    });
+}
 
 
 function onPlanetSelect(event) {
