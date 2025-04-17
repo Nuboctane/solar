@@ -403,5 +403,38 @@
         "info": "Proxima Centauri is a red dwarf star and the closest known star to the Sun at about 4.24 light-years away.",
         "ring_texture": "",
         "relative_to": ""
+    },
+    {
+        "name": "Proxima Centauri b",
+        "texture": "",
+        "color": "#5f9ea0",
+        "size": 14.2,
+        "diameter": 1.42,
+        "position": [7500, 0, 0],
+        "info": "An Earth-sized exoplanet in the habitable zone of Proxima Centauri. Potentially rocky with unknown surface conditions.",
+        "ring_texture": "",
+        "relative_to": "Proxima Centauri"
+    },
+    {
+        "name": "Proxima Centauri c",
+        "texture": "",
+        "color": "#a9a9a9",
+        "size": 18.0,
+        "diameter": 1.80,
+        "position": [220000, 0, 0],
+        "info": "A super-Earth or mini-Neptune with a frigid orbit far from Proxima Centauri. Likely too cold for liquid water.",
+        "ring_texture": "",
+        "relative_to": "Proxima Centauri"
+    },
+    {
+        "name": "Proxima Centauri d",
+        "texture": "",
+        "color": "#4682b4",
+        "size": 10.5,
+        "diameter": 1.05,
+        "position": [4000, 0, 0],
+        "info": "A small, hot sub-Earth planet with a tight orbit. Surface likely scorched by stellar flares.",
+        "ring_texture": "",
+        "relative_to": "Proxima Centauri"
     }
 ]
