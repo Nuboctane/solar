@@ -1,13 +1,15 @@
 [
     {
         "name": "Sun",
-        "texture": "constellation/textures/sun.jpg",
-        "color": "#ffff00",
+        "texture": "",
+        "color": "#fff27d",
         "size": 1392,
         "diameter": 1392.0,
         "position": [0, 0, 0],
         "info": "The Sun is the star at the center of our Solar System.",
         "ring_texture": "",
+        "star": true,
+        "brightness": 10000000,
         "relative_to": ""
     },
     {
@@ -257,6 +259,7 @@
     {
         "name": "Miranda",
         "color": "#dddddd",
+        "texture": "constellation/textures/miranda.png",
         "size": 4.7,
         "diameter": 0.47,
         "position": [129.9, 0, 0],
@@ -267,6 +270,7 @@
     {
         "name": "Ariel",
         "color": "#eeeeee",
+        "texture": "constellation/textures/ariel.png",
         "size": 11.6,
         "diameter": 1.16,
         "position": [190.9, 0, 0],
@@ -277,6 +281,7 @@
     {
         "name": "Umbriel",
         "color": "#999999",
+        "texture": "constellation/textures/umbriel.jpg",
         "size": 11.7,
         "diameter": 1.17,
         "position": [266.0, 0, 0],
@@ -286,6 +291,7 @@
     },
     {
         "name": "Titania",
+        "texture": "constellation/textures/titania.png",
         "color": "#cccccc",
         "size": 15.8,
         "diameter": 1.58,
@@ -297,6 +303,7 @@
     {
         "name": "Oberon",
         "color": "#aaaaaa",
+        "texture": "constellation/textures/oberon.jpg",
         "size": 15.2,
         "diameter": 1.52,
         "position": [583.5, 0, 0],
@@ -410,8 +417,10 @@
     },
     {
         "name": "Proxima Centauri",
-        "texture": "constellation/textures/proxima_centauri.jpg",
-        "color": "#ff3300",
+        "star": true,
+        "brightness": 10000000,
+        "texture": "",
+        "color": "#ffe819",
         "size": 200,
         "diameter": 200.0,
         "position": [40200000, 0, 0],
@@ -421,7 +430,7 @@
     },
     {
         "name": "Proxima Centauri b",
-        "texture": "",
+        "texture": "constellation/textures/pro_c_b.jpg",
         "color": "#5f9ea0",
         "size": 14.2,
         "diameter": 1.42,
