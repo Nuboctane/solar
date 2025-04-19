@@ -110,6 +110,34 @@ function animate() {
     });
 
     updateLabelConnections(camera);
+
+    scene.traverse(obj => {
+        if (obj.userData?.atmosphere) {
+            const atmosphere = obj.userData.atmosphere;
+            const uniforms = atmosphere.material?.uniforms;
+            
+            if (uniforms) {
+                // Get world position of the planet
+                const worldPosition = new THREE.Vector3();
+                obj.getWorldPosition(worldPosition);
+                
+                // Find sun position dynamically
+                let sunPosition = new THREE.Vector3(1000, 0, 0); // Default fallback
+                if (obj.userData.relativeTo) {
+                    const sun = scene.getObjectByName(obj.userData.relativeTo);
+                    if (sun) sunPosition = sun.position;
+                }
+                
+                // Update shader uniforms
+                uniforms.planetPosition.value.copy(worldPosition);
+                uniforms.sunPosition.value.copy(sunPosition);
+                uniforms.viewVector.value.copy(
+                    camera.position.clone().sub(worldPosition).normalize()
+                );
+            }
+        }
+    });
+    
     
     renderer.render(scene, camera);
 }
