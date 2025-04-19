@@ -4,12 +4,13 @@ run
 ### move camera
 WASD for basic movement
 
-SCROLL up and down for more accelerated repositioning
+SCROLL up and down for fast movement
+SCROLL (with shift) adjust FOV
 
 Q = down
 
 E = up
 
-SHIFT = slow speed
+SHIFT(hold) = slow speed
 
 M1 = pan camera
