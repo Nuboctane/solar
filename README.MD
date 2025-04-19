@@ -5,6 +5,7 @@ run
 WASD for basic movement
 
 SCROLL up and down for fast movement
+
 SCROLL (with shift) adjust FOV
 
 Q = down
