@@ -11,22 +11,24 @@ export async function loadSpheres(scene, camera) {
     const gltfLoader = new GLTFLoader();
     const dropdownContent = document.getElementById('planetDropdownContent');
 
-    // Adjusted distances for solar system scale
-    const TEXTURE_LOAD_DISTANCE = 5000000;
-    const RING_LOAD_DISTANCE = 2000000;
-
     async function loadTextureWithLOD(url, position, isRing = false) {
-        const loadDistance = isRing ? RING_LOAD_DISTANCE : TEXTURE_LOAD_DISTANCE;
+        const loadDistance = Infinity;
         if (position.distanceTo(camera.position) > loadDistance) {
             return null;
         }
         return new Promise((resolve, reject) => {
             textureLoader.load(
                 url,
-                resolve,
+                (texture) => {
+                    texture.colorSpace = THREE.SRGBColorSpace;
+                    resolve(texture);
+                },
                 undefined,
-                (err) => reject(err)
-            );
+                (err) => {
+                    console.error(`Texture failed to load: ${url}`, err);
+                    reject(err);
+                }
+            );            
         });
     }
 
@@ -351,6 +353,7 @@ export async function loadSpheres(scene, camera) {
 
         // If no texture loaded, use the fallback color
         if (!textureLoaded) {
+            console.warn(`Using fallback color for ${sphere.name}, texture was not loaded.`);
             materialOptions.color = new THREE.Color(sphere.color);
         }
 

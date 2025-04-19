@@ -27,6 +27,8 @@ export function toggleLabels() {
     return shouldShow;
 }
 
+window.toggleLabels = toggleLabels;
+
 export function createLabel(mesh, text, camera) {
     const labelContainer = document.createElement('div');
     labelContainer.className = 'planet-label-container';

@@ -440,6 +440,18 @@
         "relative_to": "Makemake"
     },
     {
+        "name": "Pluto",
+        "texture": "constellation/textures/pluto.png",
+        "color": "#c9c9c9",
+        "size": 23.77,
+        "diameter": 2.377,
+        "position": [5906370, 0, 0],
+        "info": "Pluto is a dwarf planet in the Kuiper Belt, once considered the ninth planet. It has a heart-shaped glacier and a thin atmosphere.",
+        "ring_texture": "",
+        "relative_to": "Sun",
+        "image": "constellation/textures/pluto_image.png"
+    },    
+    {
         "name": "Proxima Centauri",
         "star": true,
         "brightness": 10000000,

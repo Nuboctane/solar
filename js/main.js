@@ -2,7 +2,7 @@ import * as THREE from '../three/three.module.js';
 import { CameraStateManager } from './cameraStateManager.js';
 import { setupCameraControls, moveCamera, updateCameraState, getCameraStateFromURL } from './cameraControls.js';
 import { loadSpheres } from './planetLoader.js';
-import { toggleLabels, updateLabelConnections } from './planetLabels.js';
+import { updateLabelConnections } from './planetLabels.js';
 import { setupPlanetDropdown } from './planetNavigation.js';
 
 let scene, camera, renderer, cameraHolder;
@@ -91,7 +91,6 @@ function init() {
         setupPlanetDropdown(spheresData, cameraHolder, camera);
     });
 
-    window.toggleLabels = toggleLabels;
 }
 
 function animate() {
