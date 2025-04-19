@@ -1,28 +1,115 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8">
-  <title>Solar System 3D</title>
-  <link rel="stylesheet" href="style.css">
-  <style>
-    select {
-      position: absolute;
-      top: 20px;
-      left: 20px;
-      font-size: 16px;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <title>Solar System 3D</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body {
+            touch-action: pan-x pan-y;
+            overscroll-behavior: contain;
+        }
+    </style>
 </head>
+
 <body style="cursor: grab;">
-  <script type="module" src="js/main.js"></script>
-  <select id="planetDropdown" style="padding: 6px 12px; border-radius: 4px; border: 1px solid #ccc; cursor: pointer;">
-    <option value="">Go to</option>
-  </select>
+    <script type="module" src="js/main.js"></script>
+    <div style="position: absolute; width: 100%; height: 100%; top: 0; left: 0;">
+        <span style="margin: 1rem;">
+            <div id="planetDropdownContainer" style="display: flex;" class="dropdown">
+                <div class="dropdown-header default-style">Go to</div>
+                <div class="dropdown-content default-style" id="planetDropdownContent"></div>
+            </div>
+            <script>
+                const dropdownHeader = document.querySelector('.dropdown-header');
+                const dropdownContent = document.getElementById('planetDropdownContent');
+            
+                dropdownHeader.addEventListener('click', () => {
+                    dropdownContent.style.display = dropdownContent.style.display === 'block' ? 'none' : 'block';
+                });
 
-  <button onclick="toggleLabels()" style="padding: 8px; border-radius: 4px; border: 1px solid #ccc; background: #f0f0f0; cursor: pointer; position: absolute; left: 1vw; bottom: 1vh">
-    toggle labels
-  </button>
-  <p style="position: absolute; color: white; left: 5vw; bottom: 0.5vh;">1:1000 (km)</p>
+                document.addEventListener('keydown', (event) => {
+                    if (event.key === 'Escape') {
+                        dropdownContent.style.display = 'none';
+                    }
+                });
 
+                document.addEventListener('click', (event) => {
+                    if (!dropdownContent.contains(event.target) && !dropdownHeader.contains(event.target)) {
+                        dropdownContent.style.display = 'none';
+                    }
+                });
+            
+                function buildTree(data) {
+                    const tree = {};
+                    const map = {};
+                    data.forEach(obj => {
+                        map[obj.name] = { ...obj, children: [] };
+                    });
+                    data.forEach(obj => {
+                        if (obj.relative_to && map[obj.relative_to]) {
+                            map[obj.relative_to].children.push(map[obj.name]);
+                        } else {
+                            tree[obj.name] = map[obj.name];
+                        }
+                    });
+                    return tree;
+                }
+            
+                function populateCustomDropdown(tree, container, level = 0) {
+                    for (const key in tree) {
+                        const obj = tree[key];
+            
+                        const item = document.createElement('div');
+                        item.className = 'dropdown-item default-style hover';
+                        item.dataset.name = obj.name;
+                        item.style.paddingLeft = `${level * 20 + 8}px`;
+            
+                        const img = document.createElement('img');
+                        img.src = obj.image || 'default.jpg'; // Use your image URL or fallback
+                        item.appendChild(img);
+            
+                        const textContainer = document.createElement('div');
+                        textContainer.className = 'item-text';
+            
+                        const name = document.createElement('div');
+                        name.className = 'item-name default-style';
+                        name.textContent = obj.name;
+            
+                        const info = document.createElement('div');
+                        info.className = 'item-info default-style';
+                        info.textContent = obj.info || 'No additional info';
+            
+                        const distance = document.createElement('div');
+                        distance.className = 'item-distance default-style';
+                        distance.textContent = obj.relative_to
+                            ? `${obj.distance || '???'} kilometers from ${obj.relative_to}`
+                            : '';
+            
+                        textContainer.appendChild(name);
+                        textContainer.appendChild(info);
+                        textContainer.appendChild(distance);
+            
+                        item.appendChild(textContainer);
+                        container.appendChild(item);
+            
+                        item.addEventListener('click', () => {
+                            dropdownContent.style.display = 'none';
+                            dropdownHeader.textContent = obj.name;
+                        });
+            
+                        populateCustomDropdown(obj.children, container, level + 1);
+                    }
+                }
+            </script>
+            <button onclick="toggleLabels()"
+                class="default-style"
+                style="border-radius: 4px; cursor: pointer;">
+                toggle labels
+            </button>
+        </span>
+    </div>
 </body>
+
 </html>

@@ -41,3 +41,73 @@ canvas {
 .planet-line-canvas {
     transition: opacity 0.1s ease-out;
 }
+
+.default-style {
+    border: 1px solid #3d3d3d;
+    background-color: #202020;
+    color: #919191;
+}
+
+
+.default-style.hover:hover {
+    border: 1px solid #505050;
+    background-color: #2e2e2e;
+    color: #a8a8a8;
+}
+
+.dropdown {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    width: 300px;
+    font-family: sans-serif;
+}
+
+.dropdown-header {
+    padding: 10px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.dropdown-content {
+    display: none;
+    border-radius: 4px;
+    max-height: 400px;
+    overflow-y: auto;
+    position: absolute;
+    z-index: 10;
+    width: 100%;
+}
+
+.dropdown-item {
+    display: flex;
+    padding: 8px;
+    cursor: pointer;
+}
+
+.dropdown-item img {
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+    margin-right: 10px;
+    border-radius: 4px;
+}
+
+.item-text {
+    display: flex;
+    flex-direction: column;
+}
+
+.item-name {
+    font-weight: bold;
+}
+
+.item-info {
+    font-size: 12px;
+}
+
+.item-distance {
+    font-size: 11px;
+    margin-top: 2px;
+    font-style: italic;
+}

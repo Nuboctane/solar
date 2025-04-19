@@ -1,6 +1,6 @@
 [
     {
-        "name": "Sun",
+        "name": "Sol",
         "texture": "",
         "color": "#fff27d",
         "size": 1392,
@@ -10,7 +10,8 @@
         "ring_texture": "",
         "star": true,
         "brightness": 10000000,
-        "relative_to": ""
+        "relative_to": "",
+        "image": "constellation/textures/sun_image.png"
     },
     {
         "name": "Mercury",
@@ -19,9 +20,10 @@
         "size": 48.79,
         "diameter": 4.88,
         "position": [57910, 0, 0],
-        "info": "Mercury is the smallest and closest planet to the Sun.",
+        "info": "Mercury is the smallest and closest planet to the Sun. Mercury's mass is suggested to contain a lot of diamond.",
         "ring_texture": "",
-        "relative_to": "Sun"
+        "relative_to": "Sun",
+        "image": "constellation/textures/mercury_image.png"
     },
     {
         "name": "Venus",
@@ -32,7 +34,8 @@
         "position": [108200, 0, 0],
         "info": "Venus has a thick atmosphere and is the hottest planet.",
         "ring_texture": "",
-        "relative_to": "Sun"
+        "relative_to": "Sun",
+        "image": "constellation/textures/venus_image.png"
     },
     {
         "name": "Earth",
@@ -47,7 +50,8 @@
         "position": [149600, 0, 0],
         "info": "Earth is the only known planet to support life.",
         "ring_texture": "",
-        "relative_to": "Sun"
+        "relative_to": "Sun",
+        "image": "constellation/textures/earth_image.png"
     },
     {
         "name": "Moon",
@@ -58,7 +62,8 @@
         "position": [384.4, 0, 0],
         "info": "Earth's only natural satellite, the Moon orbits at an average distance of ~384,400 km.",
         "ring_texture": "",
-        "relative_to": "Earth"
+        "relative_to": "Earth",
+        "image": "constellation/textures/moon_image.png"
     },
     {
         "name": "Mars",
@@ -69,7 +74,8 @@
         "position": [227940, 0, 0],
         "info": "Mars is known as the Red Planet due to its surface color.",
         "ring_texture": "",
-        "relative_to": "Sun"
+        "relative_to": "Sun",
+        "image": "constellation/textures/mars_image.png"
     },
     {
         "name": "Phobos",
@@ -81,7 +87,8 @@
         "position": [9.378, 0, 0],
         "info": "The larger and closer of Mars' two moons, irregularly shaped.",
         "ring_texture": "",
-        "relative_to": "Mars"
+        "relative_to": "Mars",
+        "image": "constellation/textures/phobos_image.png"
     },
     {
         "name": "Deimos",
@@ -92,7 +99,8 @@
         "position": [23.46, 0, 0],
         "info": "The smaller and more distant of Mars' two moons.",
         "ring_texture": "",
-        "relative_to": "Mars"
+        "relative_to": "Mars",
+        "image": "constellation/textures/deimos_image.png"
     },
     {
         "name": "Sedna",
@@ -103,18 +111,20 @@
         "position": [9370000, 0, 0],
         "info": "Sedna is a distant dwarf planet with one of the largest orbits in our solar system, taking approximately 11,400 years to complete one orbit around the Sun. Its surface is one of the reddest in the solar system, likely due to hydrocarbon deposits.",
         "ring_texture": "",
-        "relative_to": "Sun"
+        "relative_to": "Sun",
+        "image": "constellation/textures/sedna_image.png"
     },
     {
         "name": "Ceres",
-        "texture": "constellation/textures/ceres.jpg",
+        "texture": "constellation/textures/ceres.png",
         "color": "#ffff00",
         "size": 9.4,
         "diameter": 0.94,
         "position": [414000, 0, 0],
         "info": "Ceres is the largest object in the asteroid belt between Mars and Jupiter and is classified as a dwarf planet.",
         "ring_texture": "",
-        "relative_to": "Sun"
+        "relative_to": "Sun",
+        "image": "constellation/textures/ceres_image.png"
     },
     {
         "name": "Jupiter",
@@ -125,47 +135,56 @@
         "position": [778330, 0, 0],
         "info": "Jupiter is the largest planet in our Solar System.",
         "ring_texture": "constellation/textures/jupiter_ring.png",
-        "relative_to": "Sun"
+        "relative_to": "Sun",
+        "image": "constellation/textures/jupiter_image.png"
     },
     {
         "name": "Io",
+        "texture": "constellation/textures/io.jpg",
         "color": "#ffcc77",
         "size": 18.2,
         "diameter": 3.64,
         "position": [421.8, 0, 0],
         "info": "The most volcanically active body in the solar system.",
         "ring_texture": "",
-        "relative_to": "Jupiter"
+        "relative_to": "Jupiter",
+        "image": "constellation/textures/io_image.png"
     },
     {
         "name": "Europa",
+        "texture": "constellation/textures/europa.jpg",
         "color": "#eeeeee",
         "size": 15.6,
         "diameter": 3.12,
         "position": [671.1, 0, 0],
         "info": "Has a smooth icy surface that may hide a subsurface ocean.",
         "ring_texture": "",
-        "relative_to": "Jupiter"
+        "relative_to": "Jupiter",
+        "image": "constellation/textures/europa_image.png"
     },
     {
         "name": "Ganymede",
+        "texture": "constellation/textures/ganymede.jpg",
         "color": "#bbbbbb",
         "size": 26.3,
         "diameter": 5.26,
         "position": [1070.4, 0, 0],
         "info": "Largest moon in the solar system, even bigger than Mercury.",
         "ring_texture": "",
-        "relative_to": "Jupiter"
+        "relative_to": "Jupiter",
+        "image": "constellation/textures/ganymede_image.png"
     },
     {
         "name": "Callisto",
+        "texture": "constellation/textures/callisto.jpg",
         "color": "#999999",
         "size": 24.1,
         "diameter": 4.82,
         "position": [1882.7, 0, 0],
         "info": "Most heavily cratered object in the solar system.",
         "ring_texture": "",
-        "relative_to": "Jupiter"
+        "relative_to": "Jupiter",
+        "image": "constellation/textures/callisto_image.png"
     },
     {
         "name": "Saturn",
@@ -176,7 +195,8 @@
         "position": [1429400, 0, 0],
         "info": "Saturn is famous for its extensive ring system.",
         "ring_texture": "constellation/textures/saturn_ring.png",
-        "relative_to": "Sun"
+        "relative_to": "Sun",
+        "image": "constellation/textures/saturn_image.png"
     },
     {
         "name": "Mimas",
@@ -465,4 +485,5 @@
         "ring_texture": "",
         "relative_to": "Proxima Centauri"
     }
+    
 ]

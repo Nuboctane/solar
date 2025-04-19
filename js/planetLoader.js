@@ -9,7 +9,7 @@ export async function loadSpheres(scene, camera) {
     const sphereMap = new Map();
     const textureLoader = new THREE.TextureLoader();
     const gltfLoader = new GLTFLoader();
-    const dropdown = document.getElementById('planetDropdown');
+    const dropdownContent = document.getElementById('planetDropdownContent');
 
     // Adjusted distances for solar system scale
     const TEXTURE_LOAD_DISTANCE = 5000000;
@@ -242,12 +242,88 @@ export async function loadSpheres(scene, camera) {
         return distA - distB;
     });
 
-    sortedData.forEach((sphere) => {
-        const option = document.createElement('option');
-        option.value = sphere.name;
-        option.textContent = sphere.name;
-        dropdown.appendChild(option);
-    });
+    function buildTree(objects) {
+        const tree = {};
+        const map = new Map();
+    
+        // Create map for easy lookup
+        objects.forEach(obj => {
+            obj.children = [];
+            map.set(obj.name, obj);
+        });
+    
+        // Build hierarchy
+        objects.forEach(obj => {
+            if (obj.relative_to && map.has(obj.relative_to)) {
+                map.get(obj.relative_to).children.push(obj);
+            } else {
+                tree[obj.name] = obj;
+            }
+        });
+    
+        return tree;
+    }
+    
+    function populateDropdown(tree, container, level = 0) {
+        for (const key in tree) {
+            const obj = tree[key];
+            
+            const item = document.createElement('div');
+            item.classList.add('dropdown-item', 'hover');
+            item.dataset.name = obj.name;
+            item.style.marginLeft = `${level * 16}px`;
+    
+            const image = document.createElement('img');
+            image.src = obj.image || 'constellation/textures/placeholder.png';
+            image.alt = obj.name;
+            image.style.width = '40px';
+            image.style.height = '40px';
+            image.style.objectFit = 'cover';
+            image.style.borderRadius = '4px';
+            image.style.marginRight = '10px';
+    
+            const textWrapper = document.createElement('div');
+            textWrapper.style.display = 'flex';
+            textWrapper.style.flexDirection = 'column';
+    
+            const nameEl = document.createElement('strong');
+            nameEl.textContent = obj.name;
+    
+            const infoEl = document.createElement('span');
+            infoEl.textContent = obj.info || 'No info provided';
+            infoEl.style.fontSize = '12px';
+            infoEl.style.color = '#aaa';
+
+            const distance = obj.relative_to
+                ? `About ${Math.round(obj.position[0]*1000)} km away from ${obj.relative_to}`
+                : 'Orbiting Sagittarius A*';
+            const distanceEl = document.createElement('span');
+            distanceEl.textContent = distance;
+            distanceEl.style.fontSize = '11px';
+            distanceEl.style.color = '#888';
+    
+            textWrapper.appendChild(nameEl);
+            textWrapper.appendChild(infoEl);
+            textWrapper.appendChild(distanceEl);
+    
+            item.style.display = 'flex';
+            item.style.alignItems = 'center';
+            item.style.gap = '10px';
+            item.style.padding = '8px';
+            item.style.cursor = 'pointer';
+    
+            item.appendChild(image);
+            item.appendChild(textWrapper);
+            container.appendChild(item);
+    
+            populateDropdown(Object.fromEntries(obj.children.map(c => [c.name, c])), container, level + 1);
+        }
+    }
+    
+    
+    // Build and populate tree structure dropdown
+    const tree = buildTree(data);
+    populateDropdown(tree, dropdownContent);   
 
     async function createSphereMesh(sphere, position) {
         const geometry = new THREE.SphereGeometry(sphere.size, 64, 64);

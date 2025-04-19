@@ -27,21 +27,38 @@ export function setupCameraControls(cameraHolder, camera) {
     });
     
     window.addEventListener('wheel', (e) => {
-        const scrollSpeed = 1000;
-        const forward = new THREE.Vector3();
-        camera.getWorldDirection(forward);
+        const hoveredElement = document.elementFromPoint(e.clientX, e.clientY);
+        if (!hoveredElement) return;
     
-        isZooming = false;
-    
-        const direction = e.deltaY < 0 ? 1 : -1;
-        const offset = forward.multiplyScalar(scrollSpeed * direction);
-        zoomFrom.copy(cameraHolder.position);
-        zoomTo.copy(zoomFrom.clone().add(offset));
-    
-        isZooming = true;
-        zoomStart = null;
-    
-        requestAnimationFrame(zoomStep);
+        const cursorStyle = getComputedStyle(hoveredElement).cursor;
+        if (cursorStyle === 'pointer') {
+            // Block scroll or just return early
+            return;
+        }
+        
+        if (e.shiftKey) {
+            const fovChangeSpeed = 1;
+            const direction = e.deltaY < 0 ? -1 : 1;
+            camera.fov = Math.max(10, Math.min(100, camera.fov + fovChangeSpeed * direction));
+            camera.updateProjectionMatrix();
+        } else {
+            //if mouse is not in a scrollwheel element
+            const scrollSpeed = 1000;
+            const forward = new THREE.Vector3();
+            camera.getWorldDirection(forward);
+            
+            isZooming = false;
+            
+            const direction = e.deltaY < 0 ? 1 : -1;
+            const offset = forward.multiplyScalar(scrollSpeed * direction);
+            zoomFrom.copy(cameraHolder.position);
+            zoomTo.copy(zoomFrom.clone().add(offset));
+            
+            isZooming = true;
+            zoomStart = null;
+            
+            requestAnimationFrame(zoomStep);
+        }
     });
 
     window.addEventListener('mousedown', (e) => {

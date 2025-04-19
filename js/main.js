@@ -9,6 +9,7 @@ let scene, camera, renderer, cameraHolder;
 let lastUpdateTime = 0;
 const urlUpdateInterval = 500;
 let spheresData = [];
+let lastFov = 75;
 let yaw = 0;
 let pitch = 0;
 let keysPressed;
@@ -28,7 +29,7 @@ function init() {
     cameraHolder.position.set(0, 0, 10000);
     scene.add(cameraHolder);
     
-    camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 1, 1e7);
+    camera = new THREE.PerspectiveCamera(lastFov, window.innerWidth/window.innerHeight, 1, 1e7);
     cameraHolder.add(camera);
     camera.rotation.order = 'YXZ';
 

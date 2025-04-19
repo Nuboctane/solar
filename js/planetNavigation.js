@@ -27,8 +27,8 @@ export function focusOnPlanet(planet, cameraHolder, camera) {
             requestAnimationFrame(animate);
         } else {
             const euler = new THREE.Euler().setFromQuaternion(camera.quaternion, 'YXZ');
-            yaw = euler.y;
-            pitch = euler.x;
+            let yaw = euler.y;
+            let pitch = euler.x;
 
             camera.near = Math.max(0.1, planet.size * 0.01);
             camera.far = 9000000 * 1.1;
@@ -40,22 +40,28 @@ export function focusOnPlanet(planet, cameraHolder, camera) {
 }
 
 export function setupPlanetDropdown(spheresData, cameraHolder, camera) {
-    const dropdown = document.getElementById('planetDropdown');
+    const dropdownContent = document.getElementById('planetDropdownContent');
+    const dropdownHeader = document.querySelector('.dropdown-header');
     let lastSelectedValue = '';
 
-    dropdown.addEventListener('change', (event) => {
-        if (event.target.value !== '' || event.target.value === lastSelectedValue) {
-            onPlanetSelect(event, spheresData, cameraHolder, camera);
-        }
-        lastSelectedValue = event.target.value;
-    });
+    dropdownContent.addEventListener('click', (event) => {
+        const item = event.target.closest('.dropdown-item');
+        if (!item) return;
 
-    dropdown.addEventListener('click', (event) => {
-        if (dropdown.value === lastSelectedValue) {
-            onPlanetSelect(event, spheresData, cameraHolder, camera);
+        const selectedName = item.dataset.name;
+        if (!selectedName) return;
+
+        if (selectedName !== '' || selectedName === lastSelectedValue) {
+            const fakeEvent = { target: { value: selectedName } };
+            onPlanetSelect(fakeEvent, spheresData, cameraHolder, camera);
         }
+
+        lastSelectedValue = selectedName;
+        dropdownHeader.textContent = selectedName;
+        dropdownContent.style.display = 'none';
     });
 }
+
 
 function onPlanetSelect(event, spheresData, cameraHolder, camera) {
     const planetName = event.target.value;
