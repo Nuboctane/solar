@@ -13,9 +13,10 @@ const zoomDuration = 0.1;
 export function setupCameraControls(cameraHolder, camera) {
     const keysPressed = new Set();
     const velocity = new THREE.Vector3();
-    let yaw = 0;
-    let pitch = 0;
-    
+    const urlParams = new URLSearchParams(window.location.search);
+    let yaw = parseFloat(urlParams.get('yaw')) || 0;
+    let pitch = parseFloat(urlParams.get('pitch')) || 0;
+
     window.addEventListener('contextmenu', (e) => e.preventDefault());
     
     document.addEventListener('keydown', (e) => {
@@ -39,7 +40,7 @@ export function setupCameraControls(cameraHolder, camera) {
         if (e.shiftKey) {
             const fovChangeSpeed = 1;
             const direction = e.deltaY < 0 ? -1 : 1;
-            camera.fov = Math.max(10, Math.min(100, camera.fov + fovChangeSpeed * direction));
+            camera.fov = Math.max(1, Math.min(125, camera.fov + fovChangeSpeed * direction));
             camera.updateProjectionMatrix();
         } else {
             //if mouse is not in a scrollwheel element
@@ -90,7 +91,6 @@ export function setupCameraControls(cameraHolder, camera) {
     });
 
     function zoomStep(timestamp) {
-        if (!zoomStart) zoomStart = timestamp;
         const elapsed = (timestamp - zoomStart) / 1000;
         const t = Math.min(elapsed / zoomDuration, 1);
         const easedT = t * t * (3 - 2 * t);

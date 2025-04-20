@@ -9,9 +9,10 @@ let scene, camera, renderer, cameraHolder;
 let lastUpdateTime = 0;
 const urlUpdateInterval = 500;
 let spheresData = [];
-let lastFov = 75;
-let yaw = 0;
-let pitch = 0;
+const urlParams = new URLSearchParams(window.location.search);
+let lastFov = parseFloat(urlParams.get('fov')) || 75;
+let yaw = parseFloat(urlParams.get('yaw')) || 0;
+let pitch = parseFloat(urlParams.get('pitch')) || 0;
 let keysPressed;
 let velocity = new THREE.Vector3();
 
