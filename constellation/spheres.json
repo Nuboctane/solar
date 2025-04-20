@@ -450,7 +450,31 @@
         "ring_texture": "",
         "relative_to": "Sun",
         "image": "constellation/textures/pluto_image.png"
-    },    
+    },
+    {
+        "name": "Voyager 1",
+        "color": "#a9a9a9",
+        "size": 0.004,
+        "diameter": 0.004,
+        "position": [23300000, 0, 0],
+        "info": "Voyager 1 is a space probe launched by NASA in 1977. It's the farthest human-made object from Earth and has entered interstellar space.",
+        "ring_texture": "",
+        "relative_to": "Sun",
+        "model": "constellation/models/voyager.glb",
+        "image": "constellation/textures/voyager_image.png"
+    },
+    {
+        "name": "Voyager 2",
+        "color": "#a9a9a9",
+        "size": 0.004,
+        "diameter": 0.004,
+        "position": [19100000, 0, 0],
+        "info": "Voyager 2 is the only spacecraft to have visited all four giant planets (Jupiter, Saturn, Uranus, Neptune) and is now exploring interstellar space.",
+        "ring_texture": "",
+        "relative_to": "Sun",
+        "model": "constellation/models/voyager.glb",
+        "image": "constellation/textures/voyager_image.png"
+    },
     {
         "name": "Proxima Centauri",
         "star": true,
